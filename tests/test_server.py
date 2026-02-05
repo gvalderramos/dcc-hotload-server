@@ -4,8 +4,8 @@ import time
 
 import pytest
 
-from dcc_hotload_server.server import DccServer
 from dcc_hotload_server.hooks.base_hook import BaseHookServer, SoftwareHint
+from dcc_hotload_server.server import DccServer
 
 
 def get_free_port() -> int:

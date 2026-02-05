@@ -3,6 +3,7 @@ from dcc_hotload_server.hooks import base_hook
 
 class HythonServer(base_hook.BaseHookServer):
     """Server hook for Houdini's hython executable."""
+
     def __init__(self, version, host="127.0.0.1", port=5000):
         """Initializes the Hython server hook.
 
@@ -27,9 +28,7 @@ class HythonServer(base_hook.BaseHookServer):
             windows=[
                 f"C:/Program Files/Side Effects Software/Houdini {version}",
             ],
-            darwin=[
-                f"/Applications/Houdini/Houdini {version}/Frameworks/Houdini.framework/Resources"
-            ],
+            darwin=[f"/Applications/Houdini/Houdini {version}/Frameworks/Houdini.framework/Resources"],
             linux=[
                 f"/opt/hfs{version}",
             ],

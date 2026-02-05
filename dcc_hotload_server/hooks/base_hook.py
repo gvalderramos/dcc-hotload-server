@@ -1,6 +1,6 @@
+import contextlib
 import socket
 import sys
-import contextlib
 
 try:
     from StringIO import StringIO  # Python 2
@@ -8,22 +8,23 @@ except ImportError:
     from io import StringIO  # Python 3
 
 import logging
-from typing import Generator
-from dataclasses import dataclass, field, asdict
 import platform
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import Generator
 
 
 @dataclass
 class SoftwareHint:
     """Dataclass to hold software path hints for different operating systems."""
+
     windows: list[str] = field(default_factory=[])
     darwin: list[str] = field(default_factory=[])
     linux: list[str] = field(default_factory=[])
 
     def get(self) -> list[str]:
         """Returns the hints for the current operating system.
-        
+
         Returns:
             list[str]: List of path hints for the current OS.
         """
@@ -34,7 +35,7 @@ class SoftwareHint:
 # Helper to capture stdout/stderr to send back to client
 @contextlib.contextmanager
 def _capture_output() -> Generator[tuple[StringIO, StringIO], None, None]:
-    """"Context manager to capture stdout and stderr.
+    """ "Context manager to capture stdout and stderr.
 
     Yields:
         tuple[StringIO, StringIO]: Captured stdout and stderr streams.
@@ -50,6 +51,7 @@ def _capture_output() -> Generator[tuple[StringIO, StringIO], None, None]:
 
 class BaseHookServer:
     """Base class for DCC hotload server hooks."""
+
     _SHUTDOWN_COMMAND = "__SHUTDOWN__"
 
     def __init__(self, app_name: str, host="127.0.0.1", port=5000):
@@ -74,7 +76,7 @@ class BaseHookServer:
     @property
     def app_path(self) -> Path:
         """Finds and returns the path to the DCC application executable.
-        
+
         Returns:
             Path: The path to the DCC application executable.
 
@@ -83,11 +85,7 @@ class BaseHookServer:
         """
         hints = self.hints().get()
         app_path = None
-        app_name = (
-            self._app_name
-            if platform.system().lower() != "windows"
-            else f"{self._app_name}.exe"
-        )
+        app_name = self._app_name if platform.system().lower() != "windows" else f"{self._app_name}.exe"
         for hint in hints:
             paths = list(Path(hint).rglob(app_name))
             if paths:
@@ -140,9 +138,7 @@ class BaseHookServer:
                 # can ask this server to stop cleanly.
                 should_shutdown = False
                 if self._SHUTDOWN_COMMAND in data.strip():
-                    self.log.info(
-                        "Shutdown command received, it will stop after processing the current request."
-                    )
+                    self.log.info("Shutdown command received, it will stop after processing the current request.")
                     should_shutdown = True
                     data = data.replace(self._SHUTDOWN_COMMAND, "").strip()
 

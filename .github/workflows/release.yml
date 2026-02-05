@@ -1,0 +1,78 @@
+name: Test, Build and Release (Poetry + PyInstaller)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+
+      - name: Run unit tests
+        run: |
+          poetry run pytest
+      
+      - name: Run linting
+        run: |
+          poetry run pre-commit run --all-files
+
+      - name: Build PyInstaller binary
+        run: |
+          poetry run pyinstaller dcc-hotload-server.spec
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcc-hotload-server-${{ runner.os }}
+          path: dist/*
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display artifacts
+        run: ls -R artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

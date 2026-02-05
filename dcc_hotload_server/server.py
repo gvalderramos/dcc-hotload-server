@@ -1,10 +1,10 @@
-import inspect
-import importlib
-import subprocess
-import pickle
 import base64
-import signal
+import importlib
+import inspect
 import os
+import pickle
+import signal
+import subprocess
 
 from dcc_hotload_server.hooks.base_hook import BaseHookServer
 
@@ -26,6 +26,7 @@ except Exception as e:
 
 class DccServer:
     """DCC Hotload Server to run a DCC in batch mode."""
+
     def __init__(self, dcc_name, version):
         """Initializes the DCC Hotload Server.
 
@@ -46,16 +47,27 @@ class DccServer:
         Raises:
             RuntimeError: If the module cannot be loaded.
         """
+        module_name = f"dcc_hotload_server.hooks.{name}"
         try:
-            module_name = f"dcc_hotload_server.hooks.{name}"
             module = importlib.import_module(module_name)
-            for _, obj in inspect.getmembers(module, inspect.isclass):
+        except (ImportError, ModuleNotFoundError) as e:
+            raise RuntimeError(f"Unable to import module '{module_name}': {e}") from e
+
+        # Find classes defined in the module that subclass BaseHookServer.
+        for _, obj in inspect.getmembers(module, inspect.isclass):
+            # skip the base class itself and classes not defined in the module
+            if obj is BaseHookServer:
+                continue
+            if getattr(obj, "__module__", None) != module.__name__:
+                continue
+            try:
                 if issubclass(obj, BaseHookServer):
                     return obj
-            else:
-                raise NotImplementedError(f"Hook {name} not implemented.")
-        except Exception as e:
-            raise RuntimeError(f"Unable to load the module {name}, because {e}")
+            except TypeError:
+                # obj is not a class that can be checked with issubclass
+                continue
+
+        raise NotImplementedError(f"Hook '{name}' not implemented in module '{module_name}'.")
 
     def start(self) -> None:
         """Starts the DCC Hotload Server."""

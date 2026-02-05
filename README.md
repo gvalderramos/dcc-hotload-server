@@ -118,6 +118,6 @@ changes and tests where appropriate.
 
 ## License
 
-This repository does not include a license file. Add a license to make your
-intentions clear.
+Check the LICENSE file for details. This project is licensed under the MIT
+License.
 

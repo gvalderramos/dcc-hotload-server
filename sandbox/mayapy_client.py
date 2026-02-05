@@ -10,9 +10,7 @@ __SHUTDOWN__
 """
 
 
-def create_mayapy_client_socket(
-    host: str = "localhost", port: int = 5000
-) -> socket.socket:
+def create_mayapy_client_socket(host: str = "localhost", port: int = 5000) -> socket.socket:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((host, port))
     return client_socket

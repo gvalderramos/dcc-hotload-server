@@ -3,6 +3,7 @@ from dcc_hotload_server.hooks import base_hook
 
 class MayaPyServer(base_hook.BaseHookServer):
     """Server hook for Maya's mayapy executable."""
+
     def __init__(self, version, host="127.0.0.1", port=5000):
         """Initializes the MayaPy server hook.
 

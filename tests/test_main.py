@@ -1,4 +1,5 @@
 import sys
+
 import pytest
 
 from dcc_hotload_server import main

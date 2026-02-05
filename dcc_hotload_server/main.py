@@ -8,9 +8,7 @@ def _parser():
     Returns:
         argparse.Namespace: Parsed command-line arguments.
     """
-    parser = argparse.ArgumentParser(
-        "DCC Hotload Server", description="TCP Server to run a DCC in batch mode."
-    )
+    parser = argparse.ArgumentParser("DCC Hotload Server", description="TCP Server to run a DCC in batch mode.")
 
     parser.add_argument(
         "--dcc",
