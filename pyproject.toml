@@ -1,6 +1,6 @@
 [project]
 name = "dcc-hotload-server"
-version = "0.1.0"
+version = "0.1.3"
 description = ""
 authors = [
     {name = "Gabriel Valderramos",email = "gabriel.valderramos@o2pos.com.br"}

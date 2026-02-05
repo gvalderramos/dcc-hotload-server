@@ -1,12 +1,17 @@
 import base64
-import importlib
-import inspect
 import os
 import pickle
 import signal
 import subprocess
 
 from dcc_hotload_server.hooks.base_hook import BaseHookServer
+from dcc_hotload_server.hooks.hython import HythonServer
+from dcc_hotload_server.hooks.mayapy import MayaPyServer
+
+_DCC_SERVER = {
+    "mayapy": MayaPyServer,
+    "hython": HythonServer,
+}
 
 _SERVER_SCRIPT = """
 import pickle
@@ -47,27 +52,10 @@ class DccServer:
         Raises:
             RuntimeError: If the module cannot be loaded.
         """
-        module_name = f"dcc_hotload_server.hooks.{name}"
-        try:
-            module = importlib.import_module(module_name)
-        except (ImportError, ModuleNotFoundError) as e:
-            raise RuntimeError(f"Unable to import module '{module_name}': {e}") from e
-
-        # Find classes defined in the module that subclass BaseHookServer.
-        for _, obj in inspect.getmembers(module, inspect.isclass):
-            # skip the base class itself and classes not defined in the module
-            if obj is BaseHookServer:
-                continue
-            if getattr(obj, "__module__", None) != module.__name__:
-                continue
-            try:
-                if issubclass(obj, BaseHookServer):
-                    return obj
-            except TypeError:
-                # obj is not a class that can be checked with issubclass
-                continue
-
-        raise NotImplementedError(f"Hook '{name}' not implemented in module '{module_name}'.")
+        module = _DCC_SERVER.get(name)
+        if module:
+            return module
+        raise NotImplementedError(f"Hook '{name}' not implemented.")
 
     def start(self) -> None:
         """Starts the DCC Hotload Server."""

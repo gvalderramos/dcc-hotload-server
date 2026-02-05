@@ -1,18 +1,26 @@
-# cpp-proj-maker.spec
+# dcc-hotload-server.spec
 # -*- mode: python ; coding: utf-8 -*-
 import sys
 
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
 block_cipher = None
 
+# Collect hooks inside dcc_hotload_server/hooks
+datas = collect_data_files(
+    "dcc_hotload_server",
+    includes=["hooks/*.py"]
+)
+
 hiddenimports = collect_submodules("dcc_hotload_server")
 
+# datas = collect_data_files("dcc_hotload_server.hooks", include_py_files=True)
+
 a = Analysis(
-    ["src/dcc_hotload_server/main.py"],
-    pathex=["src"],
+    ["dcc_hotload_server/main.py"],
+    pathex=["."],
     binaries=[],
-    datas=[],
+    datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     runtime_hooks=[],
@@ -32,7 +40,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name=f"cpp-proj-maker-{sys.platform}",
+    name=f"dcc-hotload-server-{sys.platform}",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
