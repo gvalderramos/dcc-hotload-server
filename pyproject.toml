@@ -1,0 +1,35 @@
+[project]
+name = "dcc-hotload-server"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Gabriel Valderramos",email = "gabriel.valderramos@o2pos.com.br"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dcc-hotload-server = "dcc_hotload_server.main:main"
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)",
+    "black (>=26.1.0,<27.0.0)",
+    "ruff (>=0.15.0,<0.16.0)",
+    "pre-commit (>=4.5.1,<5.0.0)"
+]
+
+[tool.ruff]
+line-length = 120
+select = ["E", "W", "F", "I", "C", "B"]
+ignore = ["E501", "C901"]
+exclude = ["jupyter_notebook_config.py"]
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
